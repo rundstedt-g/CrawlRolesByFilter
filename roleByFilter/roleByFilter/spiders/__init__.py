@@ -14,17 +14,21 @@ class RolebyfilterSpider(scrapy.Spider):
     name = 'roleByFilter'
     allowed_domains = ['woniu.com']
     url = 'http://jishi.woniu.com/9yin/anonymous/findAllRoles.do?'
-    formData = {"propConditions":{"xiuWei":"","neiGongYanXiu":"1","wuXueYanXiu":"","qiXue":"","jinShenWeiLi":"","yuanChengWeiLi":"","neiGongWeiLi":""},"andConditions":[],"orConditions":[],"typeName":"","priceMin":"500","priceMax":""}
+    payload = {'propConditions':{'xiuWei':'','neiGongYanXiu':'1','wuXueYanXiu':'','qiXue':'','jinShenWeiLi':'','yuanChengWeiLi':'','neiGongWeiLi':''},'andConditions':[],'orConditions':[],'typeName':'','priceMin':'500','priceMax':''}
+    header = {'Content-Type': 'application/json;charset=utf-8'}
 
     def start_requests(self):
-        yield scrapy.FormRequest(self.url, formdata=self.formData, callback=self.parse)
+        yield scrapy.Request(url=self.url, headers=self.header, body=json.dumps(self.payload),method="POST",callback=self.parse)
 
     def parse(self, response):
+        print("测试--")
+        print(str(response))
+        print("--测试")
         sites = json.loads(response.body_as_unicode())
         totalPages = sites[0]['pageInfo']['totalPages']
         for i in range(1,totalPages+1):
             newUrl = self.url + '&pageIndex=' +str(i)
-            yield scrapy.Request(newUrl, callback=self.parse_content)
+            yield scrapy.Request(url=newUrl, headers=self.header, body=json.dumps(self.payload),method="POST",callback=self.parse_content)
 
     def parse_content(self, response):
         sites = json.loads(response.body_as_unicode())
@@ -33,7 +37,7 @@ class RolebyfilterSpider(scrapy.Spider):
 
             url = 'http://jishi.woniu.com/9yin/roleMsg.do?'
             serverId = 'serverId=' + i['serverId']
-            roleUid = '&roleUid=' + i['roleUid']
+            roleUid = '&roleUid=' + i['sellerGameId']
             type = '&type=BaoWuBox&_='
             time_stamp = str(int(time.time()*1000))
             newUrl = url + serverId + roleUid + type +time_stamp
