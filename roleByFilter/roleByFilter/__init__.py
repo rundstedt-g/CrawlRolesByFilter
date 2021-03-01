@@ -1,3 +1,3 @@
 #!/usr/bin/python
 from scrapy import cmdline
-cmdline.execute("scrapy crawl roleByFilter".split());
+cmdline.execute("scrapy crawl roleByFilter".split())

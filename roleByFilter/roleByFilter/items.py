@@ -7,11 +7,43 @@ import scrapy
 
 
 class RolebyfilterItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
+    itemType = scrapy.Field()
+    roleID = scrapy.Field()
     name = scrapy.Field()
-    id = scrapy.Field()
-    price = scrapy.Field()
-    serverName= scrapy.Field()
     gender= scrapy.Field()
-    reviewStatus= scrapy.Field()
+    school = scrapy.Field()
+    neigongyanxiu = scrapy.Field()
+    price = scrapy.Field()
+    status = scrapy.Field()
+    server= scrapy.Field()
+
+class TreasureItem(scrapy.Item):
+    itemType = scrapy.Field()
+    tID = scrapy.Field()
+    roleID = scrapy.Field()
+    dataInfo = scrapy.Field()
+    skill = scrapy.Field()
+    is750 = scrapy.Field()
+
+class TreasurePropItem(scrapy.Item):
+    itemType = scrapy.Field()
+    pID = scrapy.Field()
+    tID = scrapy.Field()
+    prop = scrapy.Field()
+
+class ThreeSkillsItem(scrapy.Item):
+    itemType = scrapy.Field()
+    tsID = scrapy.Field()
+    roleID = scrapy.Field()
+    dataInfo = scrapy.Field()
+    wuxue = scrapy.Field()
+    skill = scrapy.Field()
+
+class SkinItem(scrapy.Item):
+    itemType = scrapy.Field()
+    sID = scrapy.Field()
+    roleID = scrapy.Field()
+    name = scrapy.Field()
+    type = scrapy.Field()
+    quality = scrapy.Field()
+    photo = scrapy.Field()
