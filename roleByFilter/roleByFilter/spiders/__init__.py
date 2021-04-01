@@ -7,6 +7,7 @@ import scrapy
 import time
 import json
 from lxml import etree
+from scrapy.mail import MailSender
 
 from ..items import RolebyfilterItem
 from ..items import TreasureItem
@@ -28,7 +29,7 @@ class RolebyfilterSpider(scrapy.Spider):
 
     #获取总页数，对每一页进行搜索
     def parse(self, response):
-        sites = json.loads(response.body_as_unicode())
+        sites = json.loads(response.text)
         totalPages = sites[0]['pageInfo']['totalPages']
         for i in range(1,totalPages+1):
             newUrl = self.url + '&pageIndex=' +str(i)
@@ -36,7 +37,7 @@ class RolebyfilterSpider(scrapy.Spider):
 
     #解析每一页
     def parse_content(self, response):
-        sites = json.loads(response.body_as_unicode())
+        sites = json.loads(response.text)
         for i in sites[0]['pageData']:
             url = 'http://jishi.woniu.com/9yin/roleMsg.do?'
             serverId = 'serverId=' + i['serverId']
@@ -82,7 +83,7 @@ class RolebyfilterSpider(scrapy.Spider):
 
     #解析内功研修
     def parse_neigongyanxiu(self, response):
-        sites = json.loads(response.body_as_unicode())
+        sites = json.loads(response.text)
         msg = sites[0]['msg']
         beg = msg.find("内功研修")+6
         end = msg.find("武学")-4
@@ -104,7 +105,7 @@ class RolebyfilterSpider(scrapy.Spider):
 
     #解析角色所在实际宗派
     def parse_school(self, response):
-        sites = json.loads(response.body_as_unicode())
+        sites = json.loads(response.text)
         msg = json.loads(sites[0]['msg'])
         school = ''
         for i in msg:
@@ -158,7 +159,7 @@ class RolebyfilterSpider(scrapy.Spider):
 
     #解析宝物匣
     def parse_BaoWuBox(self, response):
-        sites = json.loads(response.body_as_unicode())
+        sites = json.loads(response.text)
         msg = json.loads(sites[0]['msg'])
         num = 0
         for i in msg:
@@ -195,7 +196,7 @@ class RolebyfilterSpider(scrapy.Spider):
 
     #解析三技能
     def parse_threeSkills(self, response):
-        sites = json.loads(response.body_as_unicode())
+        sites = json.loads(response.text)
         msg = json.loads(sites[0]['msg'])
         threeSkillList = []
         for i in msg:
@@ -217,7 +218,7 @@ class RolebyfilterSpider(scrapy.Spider):
 
     #解析三技能 2 :装备包里的装备
     def parse_EquipToolBox(self, response):
-        sites = json.loads(response.body_as_unicode())
+        sites = json.loads(response.text)
         msg = json.loads(sites[0]['msg'])
         for i in msg:
             tree = etree.HTML(i['dataInfo'])
@@ -238,7 +239,7 @@ class RolebyfilterSpider(scrapy.Spider):
 
     #解析风物志
     def parse_UseCardRec(self, response):
-        sites = json.loads(response.body_as_unicode())
+        sites = json.loads(response.text)
         msg = json.loads(sites[0]['msg'])
         for i in msg:
             tree = etree.HTML(i['dataInfo'])
@@ -263,22 +264,16 @@ class RolebyfilterSpider(scrapy.Spider):
 
     def closed(self,reason):
         endTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-        f = open("./end.txt","w")   # 定义文件对象
+        f = open("/srv/scrapy/roleByFilter/roleByFilter/end.txt","w")   # 定义文件对象
         f.write(endTime+'\n'+reason)
         f.close()   # 将文件关闭
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        # 发送邮件
+        mailer = MailSender(
+            smtphost="smtp.qq.com",
+            mailfrom ="**********@qq.com",
+            smtpuser ="**********@qq.com",
+            smtppass ="**********",
+            smtpport =465,
+            smtpssl = True
+        )
+        return mailer.send(to={"**********@qq.com"}, subject="今日爬虫完成信息", body=endTime+'\n'+reason)

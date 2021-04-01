@@ -7,10 +7,18 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import datetime
+
 BOT_NAME = 'roleByFilter'
 
 SPIDER_MODULES = ['roleByFilter.spiders']
 NEWSPIDER_MODULE = 'roleByFilter.spiders'
+
+today = datetime.date.today()
+log_file_path = '/srv/scrapy/roleByFilter/roleByFilter/log/{}.log'.format(today).replace('-','_')
+LOG_FILE = log_file_path #日志输出文件，如果为NONE，就打印到控制台
+LOG_LEVEL = 'INFO' #日志级别，默认debug
+LOG_SHORT_NAMES = True
 
 MY_USER_AGENT = [
     "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50",
@@ -62,7 +70,7 @@ ROBOTSTXT_OBEY = True
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0.25
+DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16

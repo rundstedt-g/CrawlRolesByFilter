@@ -7,6 +7,7 @@
 # useful for handling different item types with a single interface
 
 import pymysql as pymysql
+from pymysql.converters import escape_string
 import time
 from itemadapter import ItemAdapter
 
@@ -18,7 +19,7 @@ class RolebyfilterPipeline:
         self.cursor=self.connect.cursor()
         # 重置记录 txt
         startTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-        f = open("./end.txt","w")   # 定义文件对象
+        f = open("/srv/scrapy/roleByFilter/roleByFilter/end.txt","w")   # 定义文件对象
         f.write(startTime+'\n'+'start')
         f.close()   # 将文件关闭
 
@@ -47,7 +48,7 @@ class RolebyfilterPipeline:
             self.connect.commit()#执行添加
         elif item['itemType'] == 'treasure' :
             sqlStatement = "insert into roles.treasure (tID, roleID, dataInfo, skill, is750)VALUES ({},{},'{}','{}',{})"
-            self.cursor.execute(sqlStatement.format(item['tID'], item['roleID'],pymysql.escape_string(item['dataInfo']),item['skill'],item['is750']))
+            self.cursor.execute(sqlStatement.format(item['tID'], item['roleID'],escape_string(item['dataInfo']),item['skill'],item['is750']))
             self.connect.commit()#执行添加
         elif item['itemType'] == 'treasureprop' :
             sqlStatement = "insert into roles.treasureprop (tID, prop)VALUES ({},'{}')"
@@ -55,7 +56,7 @@ class RolebyfilterPipeline:
             self.connect.commit()#执行添加
         elif item['itemType'] == 'threeSkills' :
             sqlStatement = "insert into roles.threeskills (roleID, dataInfo, wuxue, skill)VALUES ({},'{}','{}','{}')"
-            self.cursor.execute(sqlStatement.format(item['roleID'],pymysql.escape_string(item['dataInfo']),item['wuxue'],item['skill']))
+            self.cursor.execute(sqlStatement.format(item['roleID'],escape_string(item['dataInfo']),item['wuxue'],item['skill']))
             self.connect.commit()#执行添加
         elif item['itemType'] == 'skin' :
             sqlStatement = "insert into roles.skin (roleID, name, type, quality, photo)VALUES ({},'{}','{}','{}','{}')"
@@ -66,4 +67,3 @@ class RolebyfilterPipeline:
     def close_spider(self, spider):
         self.cursor.close()
         self.connect.close()  #关闭连接
-
