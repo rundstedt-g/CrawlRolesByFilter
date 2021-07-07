@@ -51,8 +51,8 @@ class RolebyfilterPipeline:
             self.cursor.execute(sqlStatement.format(item['tID'], item['roleID'],escape_string(item['dataInfo']),item['skill'],item['is750']))
             self.connect.commit()#执行添加
         elif item['itemType'] == 'treasureprop' :
-            sqlStatement = "insert into roles.treasureprop (tID, prop)VALUES ({},'{}')"
-            self.cursor.execute(sqlStatement.format(item['tID'],item['prop']))
+            sqlStatement = "insert into roles.treasureprop (tID, prop) SELECT {},'{}' FROM DUAL WHERE NOT EXISTS (SELECT * FROM roles.treasureprop WHERE tID= {} AND prop='{}')"
+            self.cursor.execute(sqlStatement.format(item['tID'],item['prop'],item['tID'],item['prop']))
             self.connect.commit()#执行添加
         elif item['itemType'] == 'threeSkills' :
             sqlStatement = "insert into roles.threeskills (roleID, dataInfo, wuxue, skill)VALUES ({},'{}','{}','{}')"
