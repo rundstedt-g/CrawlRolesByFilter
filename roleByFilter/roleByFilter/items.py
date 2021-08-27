@@ -15,7 +15,9 @@ class RolebyfilterItem(scrapy.Item):
     neigongyanxiu = scrapy.Field()
     price = scrapy.Field()
     status = scrapy.Field()
-    server= scrapy.Field()
+    server = scrapy.Field()
+    serverId = scrapy.Field()
+    grade = scrapy.Field()
 
 class TreasureItem(scrapy.Item):
     itemType = scrapy.Field()

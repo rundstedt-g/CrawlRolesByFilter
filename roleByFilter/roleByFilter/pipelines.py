@@ -14,7 +14,7 @@ from itemadapter import ItemAdapter
 
 class RolebyfilterPipeline:
     def __init__(self):
-        # 清空数据库
+        # 连接数据库
         self.connect=pymysql.connect(host='localhost',user='root',password='Wx6874024',db='roles')
         self.cursor=self.connect.cursor()
         # 重置记录 txt
@@ -43,8 +43,8 @@ class RolebyfilterPipeline:
 
     def process_item(self, item, spider):
         if item['itemType'] == 'role' :
-            sqlStatement = "insert into roles.role (roleID, name, gender, school, neigongyanxiu, price, status, server)VALUES ({},'{}','{}','{}','{}',{},'{}','{}')"
-            self.cursor.execute(sqlStatement.format(item['roleID'],item['name'],item['gender'],item['school'],item['neigongyanxiu'],item['price'],item['status'],item['server']))
+            sqlStatement = "insert into roles.role (roleID, name, gender, school, neigongyanxiu, price, status, server,serverId,grade)VALUES ({},'{}','{}','{}','{}',{},'{}','{}',{},'{}')"
+            self.cursor.execute(sqlStatement.format(item['roleID'],item['name'],item['gender'],item['school'],item['neigongyanxiu'],item['price'],item['status'],item['server'],item['serverId'],item['grade']))
             self.connect.commit()#执行添加
         elif item['itemType'] == 'treasure' :
             sqlStatement = "insert into roles.treasure (tID, roleID, dataInfo, skill, is750)VALUES ({},{},'{}','{}',{})"

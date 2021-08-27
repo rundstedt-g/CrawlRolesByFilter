@@ -39,12 +39,12 @@ class RolebyfilterSpider(scrapy.Spider):
     def parse_content(self, response):
         sites = json.loads(response.text)
         for i in sites[0]['pageData']:
-            url = 'http://jishi.woniu.com/9yin/roleMsg.do?'
+            url = 'http://jishi.woniu.com/9yin/roleMsgInfo.do?'
             serverId = 'serverId=' + i['serverId']
-            roleUid = '&roleUid=' + i['sellerGameId']
+            itemId = '&itemId=' + str(i['id'])
             type = '&type=OtherProp&_='
             time_stamp = str(int(time.time()*1000))
-            newUrl = url + serverId + roleUid + type +time_stamp
+            newUrl = url + serverId + itemId + type +time_stamp
             role = {
                 'id':i['id'],
                 'name':i['itemName'],
@@ -53,7 +53,7 @@ class RolebyfilterSpider(scrapy.Spider):
                 'server':i['areaName']+'-'+i['serverName'],
                 'status':'',
                 'serverId':i['serverId'],
-                'roleUid':i['sellerGameId']
+                'grade':i['gradeName']
             }
             if i['reviewStatus'] == 'public':
                 role['status'] = '公示期'
@@ -67,17 +67,17 @@ class RolebyfilterSpider(scrapy.Spider):
 
             type_BaoWuBox = '&type=BaoWuBox&_='
             time_stamp_BaoWuBox = str(int(time.time()*1000))
-            newUrl_BaoWuBox = url + serverId + roleUid + type_BaoWuBox +time_stamp_BaoWuBox
+            newUrl_BaoWuBox = url + serverId + itemId + type_BaoWuBox +time_stamp_BaoWuBox
             yield scrapy.Request(newUrl_BaoWuBox, callback=self.parse_BaoWuBox, meta=meta_roleID)
 
             type_EquipBox = '&type=EquipBox&_='
             time_stamp_EquipBox = str(int(time.time()*1000))
-            newUrl_EquipBox = url + serverId + roleUid + type_EquipBox +time_stamp_EquipBox
+            newUrl_EquipBox = url + serverId + itemId + type_EquipBox +time_stamp_EquipBox
             yield scrapy.Request(newUrl_EquipBox, callback=self.parse_threeSkills, meta=role)
 
             type_UseCardRec = '&type=UseCardRec&_='
             time_stamp_UseCardRec = str(int(time.time()*1000))
-            newUrl_UseCardRec = url + serverId + roleUid + type_UseCardRec +time_stamp_UseCardRec
+            newUrl_UseCardRec = url + serverId + itemId + type_UseCardRec +time_stamp_UseCardRec
             yield scrapy.Request(newUrl_UseCardRec, callback=self.parse_UseCardRec, meta=meta_roleID)
 
 
@@ -95,12 +95,12 @@ class RolebyfilterSpider(scrapy.Spider):
 
         response.meta['neigongyanxiu'] = neigongyanxiuFormat
 
-        url = 'http://jishi.woniu.com/9yin/roleMsg.do?'
+        url = 'http://jishi.woniu.com/9yin/roleMsgInfo.do?'
         serverId = 'serverId=' + response.meta['serverId']
-        roleUid = '&roleUid=' + response.meta['roleUid']
+        itemId = '&itemId=' + str(response.meta['id'])
         type = '&type=NeiGongContainer&_='
         time_stamp = str(int(time.time()*1000))
-        newUrl = url + serverId + roleUid + type +time_stamp
+        newUrl = url + serverId + itemId + type +time_stamp
         yield scrapy.Request(newUrl, callback=self.parse_school, meta=response.meta)
 
     #解析角色所在实际宗派
@@ -155,6 +155,8 @@ class RolebyfilterSpider(scrapy.Spider):
         item['price'] = response.meta['price']
         item['status'] = response.meta['status']
         item['server'] = response.meta['server']
+        item['serverId'] = response.meta['serverId']
+        item['grade'] = response.meta['grade']
         yield item
 
     #解析宝物匣
@@ -208,12 +210,12 @@ class RolebyfilterSpider(scrapy.Spider):
 
         tsMeta = {'roleID': response.meta['id'],
                   'threeSkillList': threeSkillList}
-        url = 'http://jishi.woniu.com/9yin/roleMsg.do?'
+        url = 'http://jishi.woniu.com/9yin/roleMsgInfo.do?'
         serverId = 'serverId=' + response.meta['serverId']
-        roleUid = '&roleUid=' + response.meta['roleUid']
+        itemId = '&itemId=' + str(response.meta['id'])
         type = '&type=EquipToolBox&_='
         time_stamp = str(int(time.time()*1000))
-        newUrl = url + serverId + roleUid + type +time_stamp
+        newUrl = url + serverId + itemId + type +time_stamp
         yield scrapy.Request(newUrl, callback=self.parse_EquipToolBox, meta=tsMeta)
 
     #解析三技能 2 :装备包里的装备
