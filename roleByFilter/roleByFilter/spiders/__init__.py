@@ -61,26 +61,6 @@ class RolebyfilterSpider(scrapy.Spider):
                 role['status'] = '在售'
             yield scrapy.Request(newUrl, callback=self.parse_neigongyanxiu, meta=role)
 
-            meta_roleID = {
-                'id':i['id']
-            }
-
-            type_BaoWuBox = '&type=BaoWuBox&_='
-            time_stamp_BaoWuBox = str(int(time.time()*1000))
-            newUrl_BaoWuBox = url + serverId + itemId + type_BaoWuBox +time_stamp_BaoWuBox
-            yield scrapy.Request(newUrl_BaoWuBox, callback=self.parse_BaoWuBox, meta=meta_roleID)
-
-            type_EquipBox = '&type=EquipBox&_='
-            time_stamp_EquipBox = str(int(time.time()*1000))
-            newUrl_EquipBox = url + serverId + itemId + type_EquipBox +time_stamp_EquipBox
-            yield scrapy.Request(newUrl_EquipBox, callback=self.parse_threeSkills, meta=role)
-
-            type_UseCardRec = '&type=UseCardRec&_='
-            time_stamp_UseCardRec = str(int(time.time()*1000))
-            newUrl_UseCardRec = url + serverId + itemId + type_UseCardRec +time_stamp_UseCardRec
-            yield scrapy.Request(newUrl_UseCardRec, callback=self.parse_UseCardRec, meta=meta_roleID)
-
-
     #解析内功研修
     def parse_neigongyanxiu(self, response):
         sites = json.loads(response.text)
@@ -158,6 +138,30 @@ class RolebyfilterSpider(scrapy.Spider):
         item['serverId'] = response.meta['serverId']
         item['grade'] = response.meta['grade']
         yield item
+
+        url = 'http://jishi.woniu.com/9yin/roleMsgInfo.do?'
+        serverId = 'serverId=' + item['serverId']
+        itemId = '&itemId=' + str(item['roleID'])
+
+        meta_roleID = {
+            'id':item['roleID'],
+            'serverId':item['serverId']
+        }
+
+        type_BaoWuBox = '&type=BaoWuBox&_='
+        time_stamp_BaoWuBox = str(int(time.time()*1000))
+        newUrl_BaoWuBox = url + serverId + itemId + type_BaoWuBox +time_stamp_BaoWuBox
+        yield scrapy.Request(newUrl_BaoWuBox, callback=self.parse_BaoWuBox, meta=meta_roleID)
+
+        type_EquipBox = '&type=EquipBox&_='
+        time_stamp_EquipBox = str(int(time.time()*1000))
+        newUrl_EquipBox = url + serverId + itemId + type_EquipBox +time_stamp_EquipBox
+        yield scrapy.Request(newUrl_EquipBox, callback=self.parse_threeSkills, meta=meta_roleID)
+
+        type_UseCardRec = '&type=UseCardRec&_='
+        time_stamp_UseCardRec = str(int(time.time()*1000))
+        newUrl_UseCardRec = url + serverId + itemId + type_UseCardRec +time_stamp_UseCardRec
+        yield scrapy.Request(newUrl_UseCardRec, callback=self.parse_UseCardRec, meta=meta_roleID)
 
     #解析宝物匣
     def parse_BaoWuBox(self, response):
@@ -270,12 +274,12 @@ class RolebyfilterSpider(scrapy.Spider):
         f.write(endTime+'\n'+reason)
         f.close()   # 将文件关闭
         # 发送邮件
-        mailer = MailSender(
-            smtphost="smtp.qq.com",
-            mailfrom ="**********@qq.com",
-            smtpuser ="**********@qq.com",
-            smtppass ="**********",
-            smtpport =465,
-            smtpssl = True
-        )
-        return mailer.send(to={"**********@qq.com"}, subject="今日爬虫完成信息", body=endTime+'\n'+reason)
+        # mailer = MailSender(
+        #     smtphost="smtp.qq.com",
+        #     mailfrom ="**********@qq.com",
+        #     smtpuser ="**********@qq.com",
+        #     smtppass ="**********",
+        #     smtpport =465,
+        #     smtpssl = True
+        # )
+        # return mailer.send(to={"**********@qq.com"}, subject="今日爬虫完成信息", body=endTime+'\n'+reason)
